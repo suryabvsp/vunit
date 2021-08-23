@@ -123,7 +123,7 @@ class VUnit(  # pylint: disable=too-many-instance-attributes, too-many-public-me
         else:
             self._printer = COLOR_PRINTER
 
-        self._first_test_only = args.first_test_only
+        self._first_test_only = args.first_test_only or args.gui
 
         def test_filter(name, attribute_names):
             keep = any(fnmatch(name, pattern) for pattern in args.test_patterns)
