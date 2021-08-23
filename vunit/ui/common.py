@@ -100,4 +100,10 @@ SIMULATORS = {
         "linux_path_pattern": None,
         "output_path": "rivierapro",
     },
+    "qsim": {
+        "vunit_name": "modelsim",
+        "win_path_pattern": "questasim*_*/win*",
+        "linux_path_pattern": None,
+        "output_path": "rivierapro",
+    },
 }
