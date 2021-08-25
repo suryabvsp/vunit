@@ -76,7 +76,7 @@ def get_checked_file_names_from_globs(pattern, allow_empty):
 
     return file_names
 
-WIN_INSTALL_LOCATIONS = [Path(path) for path in ("C:/",)]
+WIN_INSTALL_LOCATIONS = [Path(path) for path in ("C:/", "~", "C:/git-sdk-64/mingw64")]
 LINUX_INSTALL_LOCATIONS = [
     Path(path) for path in ("/", "~/", "/tools/", "~/modelsim", "~/programs/modelSim")
 ]
@@ -105,5 +105,10 @@ SIMULATORS = {
         "win_path_pattern": "questasim*_*/win*",
         "linux_path_pattern": None,
         "output_path": "rivierapro",
+    },
+    "ghdl": {
+        "vunit_name": "ghdl",
+        "win_path_pattern": "git-sdk-64/mingw64/bin",
+        "linux_path_pattern": "ghdl/ghdl-*/bin",
     },
 }

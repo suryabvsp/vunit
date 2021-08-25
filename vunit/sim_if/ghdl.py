@@ -122,6 +122,7 @@ class GHDLInterface(SimulatorInterface):  # pylint: disable=too-many-instance-at
         """
         Get the output of 'ghdl --version'
         """
+        print(str(Path(prefix) / cls.executable))
         return subprocess.check_output(
             [str(Path(prefix) / cls.executable), "--version"]
         ).decode()
