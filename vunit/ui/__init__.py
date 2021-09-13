@@ -16,6 +16,7 @@ import traceback
 import logging
 import json
 import os
+import subprocess
 from typing import Optional, Set, Union
 from pathlib import Path
 from fnmatch import fnmatch
@@ -151,9 +152,7 @@ class VUnit(  # pylint: disable=too-many-instance-attributes, too-many-public-me
             self._simulator_output_path = str(Path(self._output_path) / "none")
         else:
             simulator_class = self._simulator_class
-            self._simulator_output_path = str(
-                Path(self._output_path) / args.simulator
-            )
+            self._simulator_output_path = str(Path(self._output_path) / args.simulator)
 
         self._create_output_path(args.clean)
 
@@ -729,21 +728,21 @@ avoid location preprocessing of other functions sharing name with a VUnit log or
         try:
             all_ok = self._main(post_run)
         except KeyboardInterrupt:
-            sys.exit(1)
+            exit_ensure_closed(1)
         except CompileError:
-            sys.exit(1)
+            exit_ensure_closed(1)
         except SystemExit:
-            sys.exit(1)
+            exit_ensure_closed(1)
         except:  # pylint: disable=bare-except
             if self._args.dont_catch_exceptions:
                 raise
             traceback.print_exc()
-            sys.exit(1)
+            exit_ensure_closed(1)
 
         if (not all_ok) and (not self._args.exit_0):
-            sys.exit(1)
+            exit_ensure_closed(1)
 
-        sys.exit(0)
+        exit_ensure_closed(0)
 
     def _create_tests(self, simulator_if: Union[None, SimulatorInterface]):
         """
@@ -794,7 +793,7 @@ avoid location preprocessing of other functions sharing name with a VUnit log or
                 "Simulator binary folder must be available in PATH environment variable.\n"
                 "Simulator binary folder can also be set the in VUNIT_<SIMULATOR_NAME>_PATH environment variable.\n"
             )
-            sys.exit(1)
+            exit_ensure_closed(1)
 
         if not Path(self._simulator_output_path).exists():
             os.makedirs(self._simulator_output_path)
@@ -1120,3 +1119,13 @@ avoid location preprocessing of other functions sharing name with a VUnit log or
         if self._simulator_class is None:
             return None
         return self._simulator_class.supports_coverage()
+
+
+def exit_ensure_closed(code):
+    """
+    More forceful system exit
+
+    Ensures child processes are killed
+    """
+    subprocess._cleanup()
+    os._exit(code)
