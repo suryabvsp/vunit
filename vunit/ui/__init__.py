@@ -16,7 +16,7 @@ import traceback
 import logging
 import json
 import os
-import subprocess
+import psutil
 from typing import Optional, Set, Union
 from pathlib import Path
 from fnmatch import fnmatch
@@ -1127,5 +1127,8 @@ def exit_ensure_closed(code):
 
     Ensures child processes are killed
     """
-    subprocess._cleanup()
-    os._exit(code)
+    this_process = psutil.Process(os.getpid())
+    for child in this_process.children(recursive=True):
+        child.kill()
+
+    sys.exit(code)
