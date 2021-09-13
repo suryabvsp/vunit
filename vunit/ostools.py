@@ -20,6 +20,7 @@ from os.path import getmtime, relpath, splitdrive
 import os
 from os import getcwd, makedirs
 import io
+import sys
 
 import logging
 
@@ -358,3 +359,18 @@ def simplify_path(path):
         return relpath(path, cwd)
 
     return path
+
+def exit_ensure_closed(code):
+    """
+    More forceful system exit
+
+    Ensures child processes are killed
+    NOTE:
+    imports psutil here to avoid dependency from setup.py importing VUnit before psutil is installed
+    """
+    import psutil # pylint: disable=import-outside-toplevel
+    this_process = psutil.Process(os.getpid())
+    for child in this_process.children(recursive=True):
+        child.kill()
+
+    sys.exit(code)
