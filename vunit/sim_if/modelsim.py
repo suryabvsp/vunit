@@ -184,7 +184,7 @@ class ModelSimInterface(
         """
         args = [
             str(Path(self._prefix) / "vlog"),
-            "-quiet",
+            # "-quiet", # TODO figure out why this causes problems sometimes
             "-modelsimini",
             self._sim_cfg_file_name,
         ]
