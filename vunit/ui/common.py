@@ -109,6 +109,6 @@ SIMULATORS = {
     "ghdl": {
         "vunit_name": "ghdl",
         "win_path_pattern": "git-sdk-64/mingw64/bin",
-        "linux_path_pattern": "ghdl/ghdl-*/bin",
+        "linux_path_pattern": "ghdl/bin",
     },
 }
