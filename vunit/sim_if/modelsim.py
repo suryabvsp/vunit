@@ -304,7 +304,6 @@ proc vunit_load {{{{vsim_extra_args ""}}}} {{
             if {{ [lsearch -exact $unique_ld_library_list $item] == -1 }} {{
                 lappend unique_ld_library_list $item
             }}
-            puts "hello"
         }}
         set fixed_ld_library [join $unique_ld_library_list ":"]
         set env(LD_LIBRARY_PATH) $fixed_ld_library
