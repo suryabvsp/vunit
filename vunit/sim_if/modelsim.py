@@ -292,9 +292,32 @@ class ModelSimInterface(
 
         tcl = """
 proc vunit_load {{{{vsim_extra_args ""}}}} {{
+    global env
+    global tcl_platform
+    puts "before is"
+    puts [string length $env(LD_LIBRARY_PATH)]
+    puts "env is"
+    parray env
+    # parray tcl_platform
+    if {{$tcl_platform(os) eq "Linux"}} {{
+        set ld_library_list [split $env(LD_LIBRARY_PATH) ":"]
+        set unique_ld_library_list {{}}
+        foreach item $ld_library_list {{
+            if {{ [lsearch -exact $unique_ld_library_list $item] == -1 }} {{
+                lappend unique_ld_library_list $item
+            }}
+            puts "hello"
+        }}
+        set fixed_ld_library [join $unique_ld_library_list ":"]
+        set env(LD_LIBRARY_PATH) $fixed_ld_library
+    }}
+    puts "after prune is"
+    puts [string length $env(LD_LIBRARY_PATH)]
     set vsim_failed [catch {{
         eval vsim ${{vsim_extra_args}} {{{vsim_flags}}}
     }}]
+    puts "after is"
+    puts [string length $env(LD_LIBRARY_PATH)]
 
     if {{${{vsim_failed}}}} {{
        echo Command 'vsim ${{vsim_extra_args}} {vsim_flags}' failed
