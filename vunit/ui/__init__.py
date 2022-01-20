@@ -151,7 +151,7 @@ class VUnit(  # pylint: disable=too-many-instance-attributes, too-many-public-me
             self._simulator_output_path = str(Path(self._output_path) / "none")
         else:
             simulator_class = self._simulator_class
-            self._simulator_output_path = str(Path(self._output_path) / args.simulator)
+            self._simulator_output_path = str(Path(self._output_path) / str(args.simulator))
 
         self._create_output_path(args.clean)
 
