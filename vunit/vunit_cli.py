@@ -39,6 +39,7 @@ from pathlib import Path
 import os
 from vunit.sim_if.factory import SIMULATOR_FACTORY
 from vunit.about import version
+from vunit.ui.common import SIMULATORS
 
 
 class VUnitCLI(object):
@@ -249,6 +250,22 @@ def _create_argument_parser(description=None, for_documentation=False):
     )
 
     parser.add_argument("--version", action="version", version=version())
+
+    parser.add_argument(
+        "-t",
+        "--first-test-only",
+        action="store_true",
+        help="Runs only the first test that matches the input wildcard",
+        default=False,
+    )
+
+    parser.add_argument(
+        "-i",
+        "--simulator",
+        help="Select simulator",
+        choices=SIMULATORS.keys(),
+        default="msim",
+    )
 
     SIMULATOR_FACTORY.add_arguments(parser)
 

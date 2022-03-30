@@ -75,3 +75,40 @@ def get_checked_file_names_from_globs(pattern, allow_empty):
         file_names += new_file_names
 
     return file_names
+
+WIN_INSTALL_LOCATIONS = [Path(path) for path in ("C:/", "~", "C:/git-sdk-64/mingw64")]
+LINUX_INSTALL_LOCATIONS = [
+    Path(path) for path in ("/", "~/", "/tools/", "~/modelsim", "~/programs/modelSim")
+]
+
+SIMULATORS = {
+    "msim_free": {
+        "vunit_name": "modelsim",
+        "win_path_pattern": "intelFPGA/*/modelsim_ase/win32aloem",
+        "linux_path_pattern": None,
+        "output_path": "modelsim_free",
+    },
+    "msim": {
+        "vunit_name": "modelsim",
+        "win_path_pattern": "modelsim_dlx*_*/win*",
+        "linux_path_pattern": "modelsim_dlx/linux*",
+        "output_path": "modelsim",
+    },
+    "riviera": {
+        "vunit_name": "rivierapro",
+        "win_path_pattern": "Aldec/Riviera-PRO-*-x*/bin",
+        "linux_path_pattern": None,
+        "output_path": "rivierapro",
+    },
+    "qsim": {
+        "vunit_name": "modelsim",
+        "win_path_pattern": "questasim*_*/win*",
+        "linux_path_pattern": None,
+        "output_path": "rivierapro",
+    },
+    "ghdl": {
+        "vunit_name": "ghdl",
+        "win_path_pattern": "git-sdk-64/mingw64/bin",
+        "linux_path_pattern": "ghdl/bin",
+    },
+}

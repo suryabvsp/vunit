@@ -97,7 +97,7 @@ def _read_compile_order(file_name):
 
         for line in ifile.readlines():
             library_name, file_type, file_name = line.strip().split(",", 2)
-            assert file_type in ("Verilog", "VHDL", "Verilog Header")
+            assert file_type in ("Verilog", "SystemVerilog", "VHDL", "Verilog Header")
             libraries.add(library_name)
 
             # Vivado generates duplicate files for different IP:s

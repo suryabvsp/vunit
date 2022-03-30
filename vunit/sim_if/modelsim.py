@@ -184,7 +184,7 @@ class ModelSimInterface(
         """
         args = [
             str(Path(self._prefix) / "vlog"),
-            "-quiet",
+            # "-quiet", # TODO figure out why this causes problems sometimes
             "-modelsimini",
             self._sim_cfg_file_name,
         ]
@@ -292,6 +292,22 @@ class ModelSimInterface(
 
         tcl = """
 proc vunit_load {{{{vsim_extra_args ""}}}} {{
+    global env
+    global tcl_platform
+    if {{$tcl_platform(os) eq "Linux"}} {{
+        # Gross hack for modelsim bug appending to LD_LIBRARY_PATH
+        # After many sim runs overflows ARG_MAX with cryptic error
+        # Always uniquify before sim start
+        set ld_library_list [split $env(LD_LIBRARY_PATH) ":"]
+        set unique_ld_library_list {{}}
+        foreach item $ld_library_list {{
+            if {{ [lsearch -exact $unique_ld_library_list $item] == -1 }} {{
+                lappend unique_ld_library_list $item
+            }}
+        }}
+        set fixed_ld_library [join $unique_ld_library_list ":"]
+        set env(LD_LIBRARY_PATH) $fixed_ld_library
+    }}
     set vsim_failed [catch {{
         eval vsim ${{vsim_extra_args}} {{{vsim_flags}}}
     }}]

@@ -36,6 +36,7 @@ from ..vhdl_standard import VHDL, VHDLStandard
 from ..test.bench_list import TestBenchList
 from ..test.report import TestReport
 from ..test.runner import TestRunner
+from ..test.list import TestList
 
 from .common import LOGGER, TEST_OUTPUT_PATH, select_vhdl_standard, check_not_empty
 from .source import SourceFile, SourceFileList
@@ -122,6 +123,8 @@ class VUnit(  # pylint: disable=too-many-instance-attributes, too-many-public-me
         else:
             self._printer = COLOR_PRINTER
 
+        self._first_test_only = args.first_test_only or args.gui
+
         def test_filter(name, attribute_names):
             keep = any(fnmatch(name, pattern) for pattern in args.test_patterns)
 
@@ -130,6 +133,7 @@ class VUnit(  # pylint: disable=too-many-instance-attributes, too-many-public-me
 
             if args.without_attributes is not None:
                 keep = keep and set(args.without_attributes).isdisjoint(attribute_names)
+
             return keep
 
         self._test_filter = test_filter
@@ -147,9 +151,7 @@ class VUnit(  # pylint: disable=too-many-instance-attributes, too-many-public-me
             self._simulator_output_path = str(Path(self._output_path) / "none")
         else:
             simulator_class = self._simulator_class
-            self._simulator_output_path = str(
-                Path(self._output_path) / simulator_class.name
-            )
+            self._simulator_output_path = str(Path(self._output_path) / str(args.simulator))
 
         self._create_output_path(args.clean)
 
@@ -725,21 +727,21 @@ avoid location preprocessing of other functions sharing name with a VUnit log or
         try:
             all_ok = self._main(post_run)
         except KeyboardInterrupt:
-            sys.exit(1)
+            ostools.exit_ensure_closed(1)
         except CompileError:
-            sys.exit(1)
+            ostools.exit_ensure_closed(1)
         except SystemExit:
-            sys.exit(1)
+            ostools.exit_ensure_closed(1)
         except:  # pylint: disable=bare-except
             if self._args.dont_catch_exceptions:
                 raise
             traceback.print_exc()
-            sys.exit(1)
+            ostools.exit_ensure_closed(1)
 
         if (not all_ok) and (not self._args.exit_0):
-            sys.exit(1)
+            ostools.exit_ensure_closed(1)
 
-        sys.exit(0)
+        ostools.exit_ensure_closed(0)
 
     def _create_tests(self, simulator_if: Union[None, SimulatorInterface]):
         """
@@ -750,6 +752,13 @@ avoid location preprocessing of other functions sharing name with a VUnit log or
             simulator_if, self._args.elaborate
         )
         test_list.keep_matches(self._test_filter)
+        if self._first_test_only:
+            if test_list is not None and len(test_list) > 0:
+                first = test_list[0]
+                ret = TestList()
+                ret._test_suites = [test_list._test_suites[0]]
+                return ret
+            return test_list
         return test_list
 
     def _main(self, post_run):
@@ -783,7 +792,7 @@ avoid location preprocessing of other functions sharing name with a VUnit log or
                 "Simulator binary folder must be available in PATH environment variable.\n"
                 "Simulator binary folder can also be set the in VUNIT_<SIMULATOR_NAME>_PATH environment variable.\n"
             )
-            sys.exit(1)
+            ostools.exit_ensure_closed(1)
 
         if not Path(self._simulator_output_path).exists():
             os.makedirs(self._simulator_output_path)
